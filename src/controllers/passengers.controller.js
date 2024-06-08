@@ -3,7 +3,6 @@ const { passengers } = require("../models");
 module.exports = {
   createPassenger: async (req, res) => {
     try {
-      console.log(req.body);
       const newPassenger = await passengers.create({
         data: {
           first_name: req.body.first_name,
@@ -11,9 +10,8 @@ module.exports = {
           nationality: req.body.nationality,
           gender: req.body.gender,
           birth: req.body.birth,
-          bags: req.body.bags,
+          baggage: req.body.baggage,
           profile_id: req.body.profile_id,
-          orders_id: req.body.orders_id,
         },
       });
 
