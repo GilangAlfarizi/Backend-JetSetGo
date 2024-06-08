@@ -7,4 +7,7 @@ module.exports = {
   profiles: prisma.profiles,
   orders: prisma.orders,
   passengers: prisma.passengers,
+  flights: prisma.flights,
+  classes: prisma.classes,
+  tickets: prisma.tickets
 };

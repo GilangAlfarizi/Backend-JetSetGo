@@ -21,7 +21,6 @@ model users {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   profile   profiles?
-  order     orders[]
 }
 
 model profiles {
@@ -36,7 +35,8 @@ model profiles {
   updatedAt   DateTime     @updatedAt
   user_id     Int          @unique
   user        users        @relation(fields: [user_id], references: [id])
-  passenger   passengers[]
+  passengers  passengers[]
+  orders      orders[]
 }
 
 model passengers {
@@ -46,23 +46,30 @@ model passengers {
   nationality String
   gender      Gender
   birth       DateTime?
-  bags        String?
+  baggage     Int?
   profile_id  Int?
-  orders_id   Int
-  profiles    profiles? @relation(fields: [profile_id], references: [id])
-  orders      orders?   @relation(fields: [orders_id], references: [id])
+  profile     profiles? @relation(fields: [profile_id], references: [id])
+  tickets     tickets[]
+}
+
+model tickets {
+  id           Int         @id @default(autoincrement())
+  passenger_id Int         @unique
+  passenger    passengers? @relation(fields: [passenger_id], references: [id])
+  order_id     Int         @unique
+  order        orders?     @relation(fields: [order_id], references: [id])
 }
 
 model orders {
-  id          Int          @id @default(autoincrement())
-  code        String       @unique
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
   total_price Int
-  status      Status       @default(Unpaid)
-  passengers  passengers[]
+  status      Status    @default(Unpaid)
   flight_id   Int
-  flights     flights[]
-  users       users?       @relation(fields: [user_id], references: [id])
-  user_id     Int?
+  flights     flights   @relation(fields: [flight_id], references: [id])
+  profile_id  Int?
+  profile     profiles? @relation(fields: [profile_id], references: [id])
+  tickets     tickets[]
 }
 
 model classes {
@@ -81,8 +88,7 @@ model flights {
   airline        String
   airline_image  String
   price          Int
-  order_id       Int?
-  orders         orders?  @relation(fields: [order_id], references: [id])
+  orders         orders[]
   class_id       Int?
   classes        classes? @relation(fields: [class_id], references: [id])
 }
