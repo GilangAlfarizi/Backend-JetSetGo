@@ -3,7 +3,7 @@ const { classes } = require("../models");
 module.exports = {
 	create: async (req, res) => {
 		try {
-			const classFlight = await classes.create({
+			const data = await classes.create({
 				data: {
 					name: req.body.name,
 				},
@@ -11,7 +11,7 @@ module.exports = {
 
 			return res.status(201).json({
 				message: "success create classes",
-				classFlight,
+				data,
 			});
 		} catch (error) {
 			return res.status(500).json({
@@ -22,7 +22,7 @@ module.exports = {
 
 	update: async (req, res) => {
 		try {
-			const classFlight = await classes.update({
+			const data = await classes.update({
 				where: {
 					id: parseInt(req.params.id),
 				},
@@ -33,7 +33,7 @@ module.exports = {
 
 			return res.status(201).json({
 				message: "success update classes",
-				classFlight,
+				data,
 			});
 		} catch (error) {
 			return res.status(500).json({
@@ -42,7 +42,7 @@ module.exports = {
 		}
 	},
 
-	getAll: async (res) => {
+	getAll: async (req, res) => {
 		try {
 			const data = await classes.findMany();
 
