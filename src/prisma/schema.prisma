@@ -9,6 +9,91 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model users {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  email     String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  profile   profiles?
+  order     orders[]
+}
+
+model profiles {
+  id          Int          @id @default(autoincrement())
+  email       String?
+  first_name  String?
+  last_name   String?
+  nationality String?
+  gender      Gender?
+  birth       DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  user_id     Int          @unique
+  user        users        @relation(fields: [user_id], references: [id])
+  passenger   passengers[]
+}
+
+model passengers {
+  id          Int       @id @default(autoincrement())
+  first_name  String
+  last_name   String
+  nationality String
+  gender      Gender
+  birth       DateTime?
+  bags        String?
+  profile_id  Int?
+  orders_id   Int
+  profiles    profiles? @relation(fields: [profile_id], references: [id])
+  orders      orders?   @relation(fields: [orders_id], references: [id])
+}
+
+model orders {
+  id          Int          @id @default(autoincrement())
+  code        String       @unique
+  total_price Int
+  status      Status       @default(Unpaid)
+  passengers  passengers[]
+  flight_id   Int
+  flights     flights[]
+  users       users?       @relation(fields: [user_id], references: [id])
+  user_id     Int?
+}
+
+model classes {
+  id      Int       @id @default(autoincrement())
+  name    String
+  flights flights[]
+}
+
+model flights {
+  id             Int      @id @default(autoincrement())
+  code           String   @unique
+  departure_city String
+  departure_time DateTime
+  arrival_city   String
+  arrival_time   DateTime
+  airline        String
+  airline_image  String
+  price          Int
+  order_id       Int?
+  orders         orders?  @relation(fields: [order_id], references: [id])
+  class_id       Int?
+  classes        classes? @relation(fields: [class_id], references: [id])
+}
+
+enum Gender {
+  Male   @map("Male")
+  Female @map("Female")
+}
+
+enum Status {
+  Unpaid @map("Unpaid")
+  Paid   @map("Paid")
+  Finish @map("Finish")
 }
