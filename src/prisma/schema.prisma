@@ -54,6 +54,7 @@ model passengers {
 
 model tickets {
   id           Int         @id @default(autoincrement())
+  code         String      @unique
   passenger_id Int         @unique
   passenger    passengers? @relation(fields: [passenger_id], references: [id])
   order_id     Int         @unique
