@@ -15,7 +15,6 @@ module.exports = {
 
 			const profile = await profiles.create({
 				data: {
-					id: user.id,
 					email: req.body.email,
 					user_id: user.id,
 				},

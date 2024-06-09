@@ -1,4 +1,4 @@
-const { classes } = require("../models");
+const { classes, flights } = require("../models");
 
 module.exports = {
 	create: async (req, res) => {
@@ -59,17 +59,24 @@ module.exports = {
 
 	delete: async (req, res) => {
 		try {
-			const data = await classes.delete({
+			const data = await classes.findFirst({
 				where: {
 					id: parseInt(req.params.id),
 				},
 			});
 
-			if (!data) {
-				throw new Error("fail to delete class");
+			await flights.deleteMany({
+				where: { class_id: data.id },
+			});
+
+			const result = await classes.delete({ where: { id: data.id } });
+			if (!result) {
+				return res.status(404).json({ message: "Fail to delete class" });
 			}
 
-			return res.status(204).json();
+			return res.status(204).json({
+				message: "Success delete a class",
+			});
 		} catch (error) {
 			return res.status(500).json({
 				error,

@@ -21,7 +21,7 @@ module.exports = {
 
 			if (arrivalTime < departureTime) {
 				return res.status(400).json({
-					error: "arrival_time cannot be earlier than departure_time",
+					message: "arrival_time cannot be earlier than departure_time",
 				});
 			}
 
