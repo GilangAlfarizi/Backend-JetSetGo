@@ -5,7 +5,7 @@ const checkToken = (req, res, next) => {
 
 	if (!token) {
 		return res.status(403).json({
-			error: "please provide a token",
+			error: "You need to login first",
 		});
 	}
 
