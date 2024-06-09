@@ -1,4 +1,5 @@
 const { orders, passengers, flights, tickets } = require("../models");
+const { priceToIDR } = require("../utils/index");
 const { generateUUID } = require("../utils/uuid");
 const { generateVirtualAccountNumber } = require("../utils/va");
 
@@ -32,7 +33,6 @@ module.exports = {
           profile_id: profile_id,
         },
       });
-      // logic bikin tiket
 
       return res.status(201).json({
         message: "Order created",
@@ -86,6 +86,7 @@ module.exports = {
         message: "Order status updated, tickets issued",
         status: status,
         payment_method: payment_method,
+        tickets_created: createTickets,
       });
     } catch (error) {
       return res.status(500).json({
@@ -95,13 +96,14 @@ module.exports = {
     }
   },
 
-  getAllUserOrder: async (req, res) => {
+  getAllUserPaidOrder: async (req, res) => {
     try {
       const profileId = parseInt(req.params.profile_id, 10);
 
       const userOrders = await orders.findMany({
         where: {
           profile_id: profileId,
+          status: "Paid",
         },
       });
 
@@ -109,7 +111,6 @@ module.exports = {
         data: userOrders,
       });
     } catch (error) {
-      console.log(data);
       return res.status(500).json({
         message: "Error getting orders",
         error: error.message,
