@@ -1,4 +1,4 @@
-const { orders, passengers, flights } = require("../models");
+const { orders, passengers, flights, tickets } = require("../models");
 const { generateUUID } = require("../utils/uuid");
 const { generateVirtualAccountNumber } = require("../utils/va");
 
@@ -62,8 +62,28 @@ module.exports = {
         },
       });
 
+      const orderPassengers = await passengers.findMany({
+        where: {
+          profile_id: order?.profile_id,
+        },
+      });
+
+      let createdTickets = [];
+      for (const passenger of orderPassengers) {
+        const ticketData = {
+          code: generateUUID(),
+          passenger_id: passenger.id,
+          order_id: order_id,
+        };
+        createdTickets.push(ticketData);
+      }
+
+      const createTickets = await tickets.createMany({
+        data: createdTickets,
+      });
+
       return res.status(201).json({
-        message: "Order status updated",
+        message: "Order status updated, tickets issued",
         status: status,
         payment_method: payment_method,
       });
