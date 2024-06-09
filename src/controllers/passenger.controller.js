@@ -19,7 +19,7 @@ module.exports = {
           last_name: last_name,
           nationality: nationality,
           gender: gender,
-          birth: birth,
+          birth: new Date(birth),
           baggage: baggage,
           profile_id: profile_id,
         },
