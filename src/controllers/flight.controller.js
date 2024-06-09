@@ -102,6 +102,7 @@ module.exports = {
 	getAll: async (req, res) => {
 		try {
 			const data = await flights.findMany({
+				where: filter,
 				select: {
 					id: true,
 					airline_image: true,
@@ -140,7 +141,7 @@ module.exports = {
 
 			return res.status(200).json({
 				message: "success get flight detail",
-				data,
+				data: { ...data, price: priceToIDR(data.price) },
 			});
 		} catch (error) {
 			return res.status(500).json({
@@ -152,7 +153,14 @@ module.exports = {
 	getSearchedFlight: async (req, res) => {
 		try {
 			const { from, to, classFlight, departure_time } = req.query;
-			const filter = {};
+			const filter = {
+				...(departure_time && {
+					departure_time: {
+						gte: new Date(`${departure_time}T00:00:00.000Z`),
+						lt: new Date(`${departure_time}T23:59:59.999Z`),
+					},
+				}),
+			};
 
 			if (from) {
 				filter.departure_city = { contains: from };
@@ -163,25 +171,19 @@ module.exports = {
 			if (classFlight) {
 				filter.class_id = parseInt(classFlight);
 			}
-			if (departure_time) {
-				const formatDate = new Date(departure_time).toISOString().slice(0, 10);
-				// filter.departure_time = new Date(departure_time);
-				filter.departure_time = {
-					gte: formatDate + "-01-01T00:00:00.000Z",
-					lte: formatDate + "-30-23:59:59.999Z",
-				};
-			}
-			filter.departure_time.slice(0, 10);
-			console.log(departure_time);
-			console.log(filter.departureTime);
 
 			const data = await flights.findMany({
 				where: filter,
 			});
 
+			const formattedData = data.map((flight) => ({
+				...flight,
+				price: priceToIDR(flight.price),
+			}));
+
 			return res.status(200).json({
 				message: "Success get searched flights",
-				data,
+				data: formattedData,
 			});
 		} catch (error) {
 			return res.status(500).json({
