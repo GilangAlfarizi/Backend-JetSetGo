@@ -50,6 +50,55 @@ module.exports = {
 		}
 	},
 
+	update: async (req, res) => {
+		try {
+			const {
+				code,
+				departure_city,
+				departure_time,
+				arrival_city,
+				arrival_time,
+				airline,
+				airline_image,
+				price,
+				class_id,
+			} = req.body;
+
+			const departureTime = new Date(departure_time);
+			const arrivalTime = new Date(arrival_time);
+
+			if (arrivalTime < departureTime) {
+				return res.status(400).json({
+					message: "arrival_time cannot be earlier than departure_time",
+				});
+			}
+
+			const data = await flights.update({
+				where: { id: parseInt(req.params.id) },
+				data: {
+					code: code,
+					departure_city: departure_city,
+					departure_time: departureTime,
+					arrival_city: arrival_city,
+					arrival_time: arrivalTime,
+					airline: airline,
+					airline_image: airline_image,
+					price: price,
+					class_id: class_id,
+				},
+			});
+
+			return res.status(201).json({
+				message: "Success update flight",
+				data,
+			});
+		} catch (error) {
+			return res.status(500).json({
+				error,
+			});
+		}
+	},
+
 	getAll: async (req, res) => {
 		try {
 			const data = await flights.findMany({
@@ -91,6 +140,36 @@ module.exports = {
 
 			return res.status(200).json({
 				message: "success get flight detail",
+				data,
+			});
+		} catch (error) {
+			return res.status(500).json({
+				error,
+			});
+		}
+	},
+
+	getSearchedFlight: async (req, res) => {
+		try {
+			const { from, to, classFlight } = req.query;
+			const filter = {};
+
+			if (from) {
+				filter.departure_city = { contains: from };
+			}
+			if (to) {
+				filter.arrival_city = { contains: to };
+			}
+			if (classFlight) {
+				filter.class_id = parseInt(classFlight);
+			}
+
+			const data = await flights.findMany({
+				where: filter,
+			});
+
+			return res.status(200).json({
+				message: "Success get searched flights",
 				data,
 			});
 		} catch (error) {

@@ -3,7 +3,10 @@ const { tickets } = require("../models");
 module.exports = {
 	getAll: async (req, res) => {
 		try {
-			const data = await tickets.findMany();
+			const data = await tickets.findMany({
+				where: { order_id: parseInt(req.params.order_id) },
+				include: { order: true, passenger: true },
+			});
 
 			return res.status(200).json({
 				message: "success get many tickets",

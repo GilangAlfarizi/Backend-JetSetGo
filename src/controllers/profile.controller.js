@@ -26,6 +26,7 @@ module.exports = {
 						gender: req.body.gender,
 						birth: new Date(req.body.birth),
 						profile_id: data.id,
+						baggage: 7,
 					},
 				});
 				return res.status(201).json({
@@ -44,6 +45,27 @@ module.exports = {
 					birth: new Date(req.body.birth),
 				},
 			});
+			return res.status(201).json({
+				message: "Success update profile",
+				data,
+			});
+		} catch (error) {
+			console.log(error);
+			return res.status(500).json({
+				error,
+			});
+		}
+	},
+
+	getDetail: async (req, res) => {
+		try {
+			const data = await profiles.findFirst({
+				where: { id: parseInt(req.params.id) },
+				include: {
+					passengers: true,
+				},
+			});
+
 			return res.status(201).json({
 				message: "Success update profile",
 				data,

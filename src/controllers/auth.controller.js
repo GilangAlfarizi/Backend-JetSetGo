@@ -5,25 +5,20 @@ const jwt = require("jsonwebtoken");
 module.exports = {
 	register: async (req, res) => {
 		try {
-			const user = await users.create({
+			const data = await users.create({
 				data: {
 					username: req.body.username,
 					email: req.body.email,
 					password: await cryptPassword(req.body.password),
+					profile: {
+						create: {
+							email: req.body.email,
+						},
+					},
 				},
 			});
 
-			const profile = await profiles.create({
-				data: {
-					email: req.body.email,
-					user_id: user.id,
-				},
-			});
-
-			return res.status(201).json({
-				user,
-				profile,
-			});
+			return res.status(201).json(data);
 		} catch (error) {
 			console.log(error);
 			return res.status(500).json({
