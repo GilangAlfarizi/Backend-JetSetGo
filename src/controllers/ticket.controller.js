@@ -25,6 +25,10 @@ module.exports = {
 				where: {
 					id: parseInt(req.params.id),
 				},
+				include: {
+					passenger: true,
+					order: true,
+				},
 			});
 
 			return res.status(200).json({

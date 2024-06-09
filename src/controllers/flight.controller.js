@@ -151,7 +151,7 @@ module.exports = {
 
 	getSearchedFlight: async (req, res) => {
 		try {
-			const { from, to, classFlight } = req.query;
+			const { from, to, classFlight, departure_time } = req.query;
 			const filter = {};
 
 			if (from) {
@@ -163,6 +163,17 @@ module.exports = {
 			if (classFlight) {
 				filter.class_id = parseInt(classFlight);
 			}
+			if (departure_time) {
+				const formatDate = new Date(departure_time).toISOString().slice(0, 10);
+				// filter.departure_time = new Date(departure_time);
+				filter.departure_time = {
+					gte: formatDate + "-01-01T00:00:00.000Z",
+					lte: formatDate + "-30-23:59:59.999Z",
+				};
+			}
+			filter.departure_time.slice(0, 10);
+			console.log(departure_time);
+			console.log(filter.departureTime);
 
 			const data = await flights.findMany({
 				where: filter,
