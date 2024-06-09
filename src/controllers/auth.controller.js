@@ -1,4 +1,4 @@
-const { users } = require("../models");
+const { users, profiles } = require("../models");
 const { cryptPassword, compareSync } = require("../utils");
 const jwt = require("jsonwebtoken");
 
@@ -10,18 +10,23 @@ module.exports = {
 					username: req.body.username,
 					email: req.body.email,
 					password: await cryptPassword(req.body.password),
-					profile: {
-						create: {
-							email: req.body.email,
-						},
-					},
 				},
 			});
 
-			return res.json({
+			const profile = await profiles.create({
+				data: {
+					id: user.id,
+					email: req.body.email,
+					user_id: user.id,
+				},
+			});
+
+			return res.status(201).json({
 				user,
+				profile,
 			});
 		} catch (error) {
+			console.log(error);
 			return res.status(500).json({
 				error,
 			});
