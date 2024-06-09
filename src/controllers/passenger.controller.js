@@ -3,15 +3,25 @@ const { passengers } = require("../models");
 module.exports = {
   createPassenger: async (req, res) => {
     try {
+      const {
+        first_name,
+        last_name,
+        nationality,
+        gender,
+        birth,
+        baggage,
+        profile_id,
+      } = req.body;
+
       const newPassenger = await passengers.create({
         data: {
-          first_name: req.body.first_name,
-          last_name: req.body.last_name,
-          nationality: req.body.nationality,
-          gender: req.body.gender,
-          birth: req.body.birth,
-          baggage: req.body.baggage,
-          profile_id: req.body.profile_id,
+          first_name: first_name,
+          last_name: last_name,
+          nationality: nationality,
+          gender: gender,
+          birth: birth,
+          baggage: baggage,
+          profile_id: profile_id,
         },
       });
 
@@ -27,25 +37,18 @@ module.exports = {
     }
   },
 
-  getAllPassengersByProfileID: async (req, res) => {
+  getAllUserPassengers: async (req, res) => {
     try {
       const profileId = parseInt(req.params.profile_id, 10);
 
-      const passengersByProfileID = await passengers.findMany({
+      const userPassengers = await passengers.findMany({
         where: {
           profile_id: profileId,
         },
       });
 
-      if (passengersByProfileID.length === 0) {
-        return res.status(404).json({
-          error:
-            "No passengers exist, you need to create atleast one passenger",
-        });
-      }
-
       return res.status(200).json({
-        data: passengersByProfileID,
+        data: userPassengers,
       });
     } catch (error) {
       return res.status(500).json({
