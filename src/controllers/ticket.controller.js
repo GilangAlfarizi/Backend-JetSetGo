@@ -1,3 +1,4 @@
+const { profile } = require("console");
 const { tickets, flights } = require("../models");
 
 module.exports = {
@@ -5,7 +6,10 @@ module.exports = {
 		try {
 			const data = await tickets.findMany({
 				where: { order_id: parseInt(req.params.order_id) },
-				include: { order: true, passenger: true },
+				include: {
+					order: { select: { code: true } },
+					passenger: true,
+				},
 			});
 
 			return res.status(200).json({

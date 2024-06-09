@@ -67,7 +67,7 @@ module.exports = {
 			});
 
 			return res.status(201).json({
-				message: "Success update profile",
+				message: "Success get profile detail",
 				data,
 			});
 		} catch (error) {

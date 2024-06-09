@@ -102,7 +102,6 @@ module.exports = {
 	getAll: async (req, res) => {
 		try {
 			const data = await flights.findMany({
-				where: filter,
 				select: {
 					id: true,
 					airline_image: true,
