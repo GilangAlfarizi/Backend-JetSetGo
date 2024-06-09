@@ -1,19 +1,33 @@
-const { orders, tickets } = require("../models");
+const { orders, passengers, flights } = require("../models");
 const { generateUUID } = require("../utils/uuid");
+const { generateVirtualAccountNumber } = require("../utils/va");
 
 module.exports = {
   newOrder: async (req, res) => {
     try {
-      const total_price = req.body.total_price;
-      const order_code = generateUUID();
+      const { flight_id, profile_id } = req.body;
 
-      const { status, flight_id, profile_id } = req.body;
+      const totalPassengers = await passengers.count({
+        where: {
+          profile_id: profile_id,
+        },
+      });
+
+      const flightPrice = await flights.findUnique({
+        where: {
+          id: flight_id,
+        },
+      });
+
+      const total_price = flightPrice?.price * totalPassengers;
+      const order_code = generateUUID();
+      const vaNumber = generateVirtualAccountNumber();
 
       const newOrder = await orders.create({
         data: {
           code: order_code,
           total_price: total_price,
-          status: status,
+          payment_number: vaNumber,
           flight_id: flight_id,
           profile_id: profile_id,
         },
@@ -35,7 +49,8 @@ module.exports = {
   updateOrderStatus: async (req, res) => {
     try {
       const order_id = parseInt(req.params.id, 10);
-      const status = req.body.status;
+
+      const { status, payment_method } = req.body;
 
       const order = await orders.update({
         where: {
@@ -43,12 +58,14 @@ module.exports = {
         },
         data: {
           status: status,
+          payment_method: payment_method,
         },
       });
 
       return res.status(201).json({
         message: "Order status updated",
         status: status,
+        payment_method: payment_method,
       });
     } catch (error) {
       return res.status(500).json({

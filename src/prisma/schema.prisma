@@ -65,6 +65,8 @@ model orders {
   id          Int       @id @default(autoincrement())
   code        String    @unique
   total_price Int
+  payment_number String? 
+  payment_method String?  
   status      Status    @default(Unpaid)
   flight_id   Int
   flights     flights   @relation(fields: [flight_id], references: [id])
