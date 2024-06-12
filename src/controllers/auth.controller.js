@@ -29,7 +29,7 @@ module.exports = {
 
 	login: async (req, res) => {
 		try {
-			findUser = await users.findFirst({
+			const findUser = await users.findFirst({
 				where: {
 					email: req.body.email,
 				},
@@ -47,6 +47,7 @@ module.exports = {
 				});
 
 				return res.status(200).json({
+					user_id: findUser.id,
 					token,
 				});
 			}
