@@ -9,8 +9,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model users {
@@ -55,24 +56,24 @@ model passengers {
 model tickets {
   id           Int         @id @default(autoincrement())
   code         String      @unique
-  passenger_id Int         
+  passenger_id Int
   passenger    passengers? @relation(fields: [passenger_id], references: [id])
-  order_id     Int         
+  order_id     Int
   order        orders?     @relation(fields: [order_id], references: [id])
 }
 
 model orders {
-  id          Int       @id @default(autoincrement())
-  code        String    @unique
-  total_price Int
-  payment_number String? 
-  payment_method String?  
-  status      Status    @default(Unpaid)
-  flight_id   Int
-  flights     flights   @relation(fields: [flight_id], references: [id])
-  profile_id  Int?
-  profile     profiles? @relation(fields: [profile_id], references: [id])
-  tickets     tickets[]
+  id             Int       @id @default(autoincrement())
+  code           String    @unique
+  total_price    Int
+  payment_number String?
+  payment_method String?
+  status         Status    @default(Unpaid)
+  flight_id      Int
+  flights        flights   @relation(fields: [flight_id], references: [id])
+  profile_id     Int?
+  profile        profiles? @relation(fields: [profile_id], references: [id])
+  tickets        tickets[]
 }
 
 model classes {
